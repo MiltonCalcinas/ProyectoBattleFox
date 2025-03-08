@@ -1,0 +1,4 @@
+futuras implementaciones
+- mario saltar
+- mario correr
+- añadir enemigos
