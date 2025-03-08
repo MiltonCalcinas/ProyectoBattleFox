@@ -56,7 +56,18 @@ public class Nivel1 implements Screen {
         // width, height,x,y
          datos = new int[][]{{ 0, 0,Gdx.graphics.getWidth(), 40}, // suelo
              { 0, 0,55, Gdx.graphics.getHeight()}, // pared izq
-             { 1320, 0,100, Gdx.graphics.getHeight()}}; // pared der
+             { 1320, 0,100, Gdx.graphics.getHeight()},// pared der
+             {55,300,365,70}, // 1
+             {360,250,215,65}, // 2
+             {565,195,100,65},// 3
+             {665,135,110,65}, // 4
+             {775,90,155,55},// 5
+             {930,135,125,65},//6
+             {1000,200,130,115},//7
+             {1100,200,200,60}, // 8
+             {1270,200,130,115},//9
+             {260,40,218,65}//10
+         }; // 5
 
          // superficies
         superficies = new Array<>();
@@ -95,8 +106,16 @@ public class Nivel1 implements Screen {
         // pintar superificies del juego
         pintarSuperficies();
 
+        // nivel 2
+        iniciarNivel2();
 
 
+    }
+
+    private void iniciarNivel2() {
+        if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
+            game.setScreen(new Nivel2(game));
+        }
     }
 
     private void movimientoPersonaje() {

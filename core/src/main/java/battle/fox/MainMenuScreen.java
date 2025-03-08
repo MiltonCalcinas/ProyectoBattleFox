@@ -48,7 +48,7 @@ public class MainMenuScreen implements Screen {
         // Llamar a la función para dibujar los bordes
         drawButtonBorder();
 
-        // Si el usuario presiona enter
+        // cambiar a ventana de juego
         presskEnter();
         clickButtonStart();
     }
