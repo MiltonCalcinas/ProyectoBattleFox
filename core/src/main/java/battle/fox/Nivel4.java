@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -13,6 +14,7 @@ public class Nivel4 implements Screen {
     private Game game;
     private Texture background;
     private SpriteBatch batch;
+    private Music backgroundSound;
     public Nivel4(Game game){
         this.game = game;
     }
@@ -22,6 +24,15 @@ public class Nivel4 implements Screen {
     public void show() {
         background = new Texture("fondo-bosque4.png");
         batch =new SpriteBatch();
+
+        configurarSonidoFondo();
+    }
+
+    private void configurarSonidoFondo() {
+        backgroundSound = Gdx.audio.newMusic(Gdx.files.internal("background_sound_nivel4.mp3"));
+        backgroundSound.setLooping(true);
+        backgroundSound.setVolume(0.7f);
+        backgroundSound.play();
     }
 
     @Override
@@ -37,6 +48,8 @@ public class Nivel4 implements Screen {
 
     private void iniciarNivel5() {
         if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
+            backgroundSound.stop();
+            dispose();
            game.setScreen(new Nivel5(game));
         }
     }
@@ -65,5 +78,6 @@ public class Nivel4 implements Screen {
     public void dispose() {
         batch.dispose();
         background.dispose();
+        backgroundSound.dispose();
     }
 }

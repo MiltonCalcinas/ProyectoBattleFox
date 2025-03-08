@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -13,44 +14,47 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.math.Rectangle;
 
-import java.awt.Rectangle;
+
 
 public class Nivel1 implements Screen {
     private Game game;
     private SpriteBatch batch;
-    private Texture background,playerTexture;
+    private Texture background;
     private ShapeRenderer shapeRenderer;
     int[][] datos;
     private Array<Rectangle> superficies;
-    private Rectangle marioRectangle; // Área de colisión del personaje
-    private Animation<TextureRegion> walkMarioAnimation;
-    private float stateTime;
+
+    private Music backgroundSound;
+    private Personaje mario;
 
     public Nivel1(Game game) {
         this.game = game; // Guardar la instancia del juego
+
+
+    }
+    @Override
+    public void show() {
         batch = new SpriteBatch();
         background = new Texture("fondo-bosque1.png");
         shapeRenderer = new ShapeRenderer();
 
+
         configurarSuperficies();
-        configurarPersonaje();
+        mario = new Personaje(100,40,50,50);
+        configurarSonidoFondo();
 
     }
-    private void configurarPersonaje(){
-        TextureAtlas altlas = new TextureAtlas(Gdx.files.internal("Mario_and_Enemies.pack"));
-        TextureRegion bigMarioRegion = altlas.findRegion("big_mario");
 
-        // Animación caminar mario
-        Array<TextureRegion> walkMario = new Array<>();
-        for (int i = 0; i < 4; i++) {
-            walkMario.add(new TextureRegion(bigMarioRegion, i * 16, 0, 16, bigMarioRegion.getRegionHeight()));
-        }
-        walkMarioAnimation = new Animation<>(0.1f,walkMario);
-
-        marioRectangle = new Rectangle(100,40,50,50);
-        stateTime = 0f; // Iniciar el tiempo de animación
+    private void configurarSonidoFondo() {
+        backgroundSound = Gdx.audio.newMusic(Gdx.files.internal("background_sound_nivel1.mp3"));
+        backgroundSound.setLooping(true);
+        backgroundSound.setVolume(0.7f);
+        backgroundSound.play();
     }
+
+
     private void configurarSuperficies() {
          // datos son las coordenadas de x y con el width y heigth de las superficies
         // width, height,x,y
@@ -62,7 +66,7 @@ public class Nivel1 implements Screen {
              {565,195,100,65},// 3
              {665,135,110,65}, // 4
              {775,90,155,55},// 5
-             {930,135,125,65},//6
+             //{930,135,125,65},//6
              {1000,200,130,115},//7
              {1100,200,200,60}, // 8
              {1270,200,130,115},//9
@@ -80,32 +84,29 @@ public class Nivel1 implements Screen {
 
     }
 
-    @Override
-    public void show() {
-    }
+
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         // movimientos del personaje
-        movimientoPersonaje();
-
-
+        mario.manejarMovimiento(superficies,delta);
+        // Verificar colisiones
+        //mario.verificarColisiones(superficies);
 
         // pintar fondo
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        stateTime+= delta;
-        TextureRegion currentFrame = walkMarioAnimation.getKeyFrame(stateTime,true);
-        batch.draw(currentFrame,marioRectangle.x,marioRectangle.y,marioRectangle.width,marioRectangle.height);
+        mario.renderizar(delta,batch);
         batch.end();
-        // Verificar colisiones
-        verificarColisiones();
 
-        // pintar superificies del juego
-        pintarSuperficies();
 
+        // pintar SUPERFICIES Y MARIO
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        printarSuperficies();
+        mario.printar(shapeRenderer);
+        shapeRenderer.end();
         // nivel 2
         iniciarNivel2();
 
@@ -114,43 +115,21 @@ public class Nivel1 implements Screen {
 
     private void iniciarNivel2() {
         if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
+            backgroundSound.stop();
+            dispose();
             game.setScreen(new Nivel2(game));
         }
     }
 
-    private void movimientoPersonaje() {
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            marioRectangle.x+=5;
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            marioRectangle.x-=5;
-        }
-
-    }
-
-    private void verificarColisiones() {
-        // Pared izquierda (superficie en la posición x = 0)
-        if (marioRectangle.x <= superficies.get(1).x + superficies.get(1).width) {
-            marioRectangle.x = superficies.get(1).x + superficies.get(1).width; // Detener al personaje
-        }
-
-        // Pared derecha (superficie en la posición x = 800)
-        if (marioRectangle.x + marioRectangle.width >= superficies.get(2).x) {
-            marioRectangle.x = superficies.get(2).x - marioRectangle.width; // Detener al personaje
-        }
-    }
 
 
-    private void pintarSuperficies() {
+    private void printarSuperficies() {
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(1, 0, 0, 1);
-
+        //printar superficies
         for(int i=0;i<superficies.size;i++){
             shapeRenderer.rect(superficies.get(i).x,superficies.get(i).y,superficies.get(i).width,superficies.get(i).height);
         }
-        shapeRenderer.rect(marioRectangle.x,marioRectangle.y,marioRectangle.width,marioRectangle.height);
-        shapeRenderer.end();
 
     }
 
@@ -170,7 +149,7 @@ public class Nivel1 implements Screen {
     public void dispose() {
         batch.dispose();
         background.dispose();
-
+        backgroundSound.dispose();
 
     }
 }
