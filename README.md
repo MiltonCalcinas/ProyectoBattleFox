@@ -1,35 +1,40 @@
-# BattleFox
+# Battle Fox
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+## Descripción
+Battle Fox es un videojuego desarrollado en **LibGDX**, donde controlarás a un lobo guerrero que debe derrotar a sus enemigos lanzando bolas de fuego. A través de **6 niveles**, enfrentarás desafiantes batallas hasta completar la aventura.
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+## Menú de Inicio
+Al iniciar el juego, el menú principal ofrece tres opciones:
+- **START GAME**: Comienza la aventura en el primer nivel.
+- **OPTIONS**: Configura el volumen del juego.
+- **EXIT**: Cierra la aplicación.
 
-## Platforms
+## Jugabilidad
+- Controlas a un **lobo guerrero** que debe eliminar a todos los enemigos de cada nivel.
+- Puedes lanzar **bolas de fuego** para atacar.
+- Una vez que todos los enemigos sean derrotados, el lobo avanza al siguiente nivel.
+- El juego cuenta con **6 niveles** en total.
+- Al finalizar el juego, aparecerá una ventana que te permite **volver al menú principal** o **cerrar el juego**.
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
-- `android`: Android mobile platform. Needs Android SDK.
+## Controles
+- **Movimiento**: "a" y "d" para moverse, "w" para saltar.
+- **Ataque**: "j" para lanzar bola de fuego.
 
-## Gradle
+## Tecnología
+- Desarrollado con **LibGDX**.
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+## Instalación y Ejecución
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/MiltonCalcinas/ProyectoBattleFox.git
+   ```
+2. Abrir el proyecto en un entorno compatible con LibGDX.
+3. Compilar y ejecutar el juego.
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `android:lint`: performs Android project validation.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+## Autor
+Desarrollado por **MiltonCalcinas**.
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+---
+
+© 2025 Battle Fox - Todos los derechos reservados.
+
