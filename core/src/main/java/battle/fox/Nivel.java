@@ -21,7 +21,7 @@ public class Nivel implements Screen {
 
     private boolean fin=false;
     private Music backgroundSound;
-    private Personaje mario;
+    private Personaje lobo;
     private ConfigurarSuperficies configSuperficie;
     private Array<Enemigo> enemigos;
     private int nivel_i=1;
@@ -40,7 +40,7 @@ public class Nivel implements Screen {
         enemigos= new Array<>();
         configuararEnemigos(5);
 
-        mario = new Personaje(100,40,50,50,enemigos);
+        lobo = new Personaje(100,40,50,50,enemigos);
 
         configSuperficie = new  ConfigurarSuperficies();
         configSuperficie.establecerRectableNivel1();
@@ -51,7 +51,7 @@ public class Nivel implements Screen {
         String cancionNivel1 = "background_sound_nivel1.mp3";
         configurarSonidoFondo(cancionNivel1);
 
-        nivelesConfig = new NivelesConfig(background,configSuperficie,enemigos,mario,backgroundSound);
+        nivelesConfig = new NivelesConfig(background,configSuperficie,enemigos,lobo,backgroundSound);
 
 
     }
@@ -77,12 +77,12 @@ public class Nivel implements Screen {
     @Override
     public void render(float delta) {
         // finalizar al completar o al matar al personaje
-        fin = fin || mario.isDead() ;
+        fin = fin || lobo.isDead() ;
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         // movimientos del personaje  y del enemigo
-        mario.manejarMovimiento(configSuperficie.ArraySuperficies(), delta);
+        lobo.manejarMovimiento(configSuperficie.ArraySuperficies(), delta);
         for (Enemigo enemigo_i : enemigos) {
             enemigo_i.actualizar(configSuperficie.ArraySuperficies(), delta);
 
@@ -90,8 +90,9 @@ public class Nivel implements Screen {
         // pintar fondo
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        if(!fin){
-            mario.renderizar(delta,batch);
+        lobo.renderizar(delta,batch);
+        if(fin){
+            lobo.setX(-100);
         }
 
 
@@ -101,27 +102,23 @@ public class Nivel implements Screen {
 
         batch.end();
 
+        // pintar SUPERFICIES Y lobo
+        //shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-        // pintar SUPERFICIES Y MARIO
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        //configSuperficie.printarSuperficies(shapeRenderer);
+        //lobo.printar(shapeRenderer);
 
-        configSuperficie.printarSuperficies(shapeRenderer);
-        mario.printar(shapeRenderer);
+        //for(Enemigo enemigo_i : enemigos){
+        //    enemigo_i.printar(shapeRenderer);
+        //}
 
-        for(Enemigo enemigo_i : enemigos){
-            enemigo_i.printar(shapeRenderer);
-        }
-
-        shapeRenderer.end();
+        //shapeRenderer.end();
 
         cambiarDeNivel();
-
-
-
     }
 
     private void cambiarDeNivel() {
-        if(mario.enemigosVivos()==0 && !mario.isDead() && !fin){
+        if(lobo.enemigosVivos()==0 && !lobo.isDead() && !fin){
             nivel_i = nivel_i +1;
             if(nivel_i==7){
                 fin = true;
@@ -132,6 +129,7 @@ public class Nivel implements Screen {
             background = nivelesConfig.getBackground();
         }
         if(fin){
+
             nivelesConfig.finJuego();
             background.dispose();
             background = nivelesConfig.getBackground();

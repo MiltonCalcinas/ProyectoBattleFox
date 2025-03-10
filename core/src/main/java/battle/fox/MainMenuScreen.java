@@ -18,7 +18,7 @@ public class MainMenuScreen implements Screen {
     private Texture backgroundMenu;
     private SpriteBatch batch;
     private Rectangle startButtonBounds,optionButtonBounds,exitButtonBounds;
-    private ShapeRenderer shapeRenderer; // Nueva instancia de ShapeRenderer
+    private ShapeRenderer shapeRenderer;
 
     public MainMenuScreen(Game game) {
         this.game = game;
@@ -52,9 +52,9 @@ public class MainMenuScreen implements Screen {
         batch.end();
 
         // Llamar a la función para dibujar los bordes
-        drawButtonStart();
-        drawButtonOption();
-        drawButtonExit();
+        //drawButtonStart();
+        //drawButtonOption();
+        //drawButtonExit();
 
         // cambiar a ventana de juego
         presskEnter();
@@ -94,19 +94,20 @@ public class MainMenuScreen implements Screen {
 
     private void drawButtonStart() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line); // Inicia el dibujo de contornos
-        shapeRenderer.setColor(1, 0, 0, 1); // Establece el color del borde (Rojo en este caso)
+
+        shapeRenderer.setColor(0, 0, 0, 0); // Establece el color del borde (Rojo en este caso)
         shapeRenderer.rect(startButtonBounds.x, startButtonBounds.y, startButtonBounds.width, startButtonBounds.height);
         shapeRenderer.end(); // Finaliza el dibujo
     }
     private void drawButtonOption() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line); // Inicia el dibujo de contornos
-        shapeRenderer.setColor(1, 0, 0, 1); // Establece el color del borde (Rojo en este caso)
+        shapeRenderer.setColor(0, 0, 0, 0); // Establece el color del borde (Rojo en este caso)
         shapeRenderer.rect(optionButtonBounds.x, optionButtonBounds.y, optionButtonBounds.width, optionButtonBounds.height);
         shapeRenderer.end(); // Finaliza el dibujo
     }
     private void drawButtonExit() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line); // Inicia el dibujo de contornos
-        shapeRenderer.setColor(1, 0, 0, 1); // Establece el color del borde (Rojo en este caso)
+        shapeRenderer.setColor(0, 0, 0, 0); // Establece el color del borde (Rojo en este caso)
         shapeRenderer.rect(exitButtonBounds.x, exitButtonBounds.y, exitButtonBounds.width, exitButtonBounds.height);
         shapeRenderer.end(); // Finaliza el dibujo
     }

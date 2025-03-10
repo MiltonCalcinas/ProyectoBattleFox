@@ -25,16 +25,16 @@ public class Opciones implements Screen {
         this.game = game;
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        background = new Texture("opciones.jpeg"); // Asegúrate de tener esta imagen
+        background = new Texture("opciones.jpeg"); 
 
-        // Posicionar los botones en el centro, separados por 100px verticalmente
+        // Posicionar los botones en el centro, separados  verticalmente
         int pantallaAncho = Gdx.graphics.getWidth();
         int pantallaAlto = Gdx.graphics.getHeight();
         int botonAncho = 150;
         int botonAlto = 50;
         int centroX = 630;
         int centroY =440;
-
+        // botone para subir el volumen, bajar el volumen y volver al menu de inicio
         botonVolumenMas = new Rectangle(centroX, centroY, botonAncho, botonAlto);
         botonVolumenMenos = new Rectangle(centroX, centroY - 90, botonAncho, botonAlto);
         botonVolver = new Rectangle(centroX, centroY - 210, botonAncho, botonAlto);
@@ -46,7 +46,7 @@ public class Opciones implements Screen {
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        dibujarRectangulos();
+        //dibujarRectangulos();
         detectarClick();
     }
 

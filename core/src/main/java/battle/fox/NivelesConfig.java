@@ -15,7 +15,11 @@ public class NivelesConfig {
     private Personaje lobo;
     private Music backgroundSound;
     private float volumenActual;
-    public NivelesConfig(Texture background, ConfigurarSuperficies configSuperficie, Array<Enemigo> enemigos, Personaje lobo, Music backgroundSound) {
+    
+    public NivelesConfig(Texture background, 
+                        ConfigurarSuperficies configSuperficie,
+                        Array<Enemigo> enemigos, 
+                        Personaje lobo, Music backgroundSound) {
         this.background = background;
         this.configSuperficie = configSuperficie;
         this.enemigos = enemigos;

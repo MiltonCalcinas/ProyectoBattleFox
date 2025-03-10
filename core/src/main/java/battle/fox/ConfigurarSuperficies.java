@@ -18,7 +18,7 @@ public class ConfigurarSuperficies {
     public void printarSuperficies(ShapeRenderer shapeRenderer) {
         this.shapeRenderer = shapeRenderer;
 
-        shapeRenderer.setColor(0, 0, 1, 1);
+        shapeRenderer.setColor(0, 0, 0, 0);
         //printar superficies
         for(int i=0;i<superficies.size;i++){
             shapeRenderer.rect(superficies.get(i).x,superficies.get(i).y,superficies.get(i).width,superficies.get(i).height);

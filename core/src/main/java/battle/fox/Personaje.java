@@ -162,7 +162,9 @@ public class Personaje {
         stateTime += delta;
         actualizarBalas(delta);
 
-        TextureRegion frameActual = (!Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A)) ? frameReposo : walkAnimation.getKeyFrame(stateTime, true);
+        TextureRegion frameActual = (!Gdx.input.isKeyPressed(Input.Keys.D) && 
+                                    !Gdx.input.isKeyPressed(Input.Keys.A)) 
+                                    ? frameReposo : walkAnimation.getKeyFrame(stateTime, true);
 
         if (mirandoDerecha && !frameActual.isFlipX()) {
             frameActual.flip(true, false);
