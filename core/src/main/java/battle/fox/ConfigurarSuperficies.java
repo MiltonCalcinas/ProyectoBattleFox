@@ -203,4 +203,20 @@ public class ConfigurarSuperficies {
     }
 
 
+    public void finJuego() {
+        int[][] datos = new int[][]{
+            {620,340,170,50},
+            {620,230,170,50}
+        };
+
+        superficies = new Array<>();
+        for (int i = 0; i < datos.length; i++) {
+            superficies.add(new Rectangle(datos[i][0], datos[i][1], datos[i][2], datos[i][3]));
+
+        }
+
+
+
+
+    }
 }

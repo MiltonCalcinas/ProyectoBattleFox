@@ -87,7 +87,10 @@ public class Enemigo {
         return bounds;
     }
 
-    public void renderizar(float delta,SpriteBatch batch) {
+    public void renderizar(float delta,SpriteBatch batch,boolean fin) {
+        if(fin){
+            return;
+        }
         stateTime+=delta;
         TextureRegion frameActual = enemigoAnimation.getKeyFrame(stateTime, true);
 

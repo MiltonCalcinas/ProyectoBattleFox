@@ -22,6 +22,7 @@ public class Personaje {
     private boolean mirandoDerecha = false;
     private Array<BolaDeFuego> bolasDeFuego = new Array<>();
     private Array<Enemigo> enemigos;
+    private  boolean colsionConEnemigo = false;
 
     public Personaje(float x, float y, float width, float height, Array<Enemigo> enemigos) {
         this.bounds = new Rectangle(x, y, width, height);
@@ -109,7 +110,25 @@ public class Personaje {
                     }
                 }
             }
+
+            // colision con enemigo
+
+            // Comprobar colisión con enemigos y eliminar al personaje y enemigos
+            for (int i = enemigos.size - 1; i >= 0; i--) {
+                Enemigo enemigo = enemigos.get(i);
+                if (bounds.overlaps(enemigo.getBounds())) {
+                    enemigos.clear(); // Eliminar todos los enemigos
+                    bounds.set(-100, -100, 0, 0); // Mueve al personaje fuera de la pantalla
+                    colsionConEnemigo = true;
+                    break;
+                }
+            }
         }
+    }
+
+    public boolean isDead(){
+
+        return colsionConEnemigo;
     }
 
     public void disparar() {
@@ -138,6 +157,8 @@ public class Personaje {
     }
 
     public void renderizar(float delta, SpriteBatch batch) {
+
+
         stateTime += delta;
         actualizarBalas(delta);
 
@@ -179,4 +200,6 @@ public class Personaje {
     public void setEnemigos(Array<Enemigo> enemigos) {
         this.enemigos = enemigos;
     }
+
+
 }

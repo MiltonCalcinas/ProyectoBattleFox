@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
 
+
 public class NivelesConfig {
 
     private Texture background;
@@ -13,12 +14,16 @@ public class NivelesConfig {
     private Array<Enemigo> enemigos;
     private Personaje lobo;
     private Music backgroundSound;
+    private float volumenActual;
     public NivelesConfig(Texture background, ConfigurarSuperficies configSuperficie, Array<Enemigo> enemigos, Personaje lobo, Music backgroundSound) {
         this.background = background;
         this.configSuperficie = configSuperficie;
         this.enemigos = enemigos;
         this.lobo = lobo;
         this.backgroundSound = backgroundSound;
+        volumenActual = Configuracion.getInstancia().getVolumen();
+
+
     }
 
     public void setNivel(int nivelI) {
@@ -36,7 +41,7 @@ public class NivelesConfig {
         };
         backgroundSound = Gdx.audio.newMusic(Gdx.files.internal(ArrayBackSounds[nivelI-1]));
         backgroundSound.setLooping(true);
-        backgroundSound.setVolume(0.7f);
+        backgroundSound.setVolume(volumenActual);
         backgroundSound.play();
         // fondo de pantalla
         String[] ArrayFondoBosques={
@@ -76,4 +81,22 @@ public class NivelesConfig {
     public Texture getBackground() {
         return this.background;
     }
+    public void finJuego(){
+
+        backgroundSound.stop();
+        //backgroundSound = Gdx.audio.newMusic(Gdx.files.internal("background-sound-fin-juego.mp3"));
+        //backgroundSound.setLooping(true);
+        //backgroundSound.setVolume(volumenActual);
+        //backgroundSound.play();
+
+        this.background = new Texture("fondo-fin-juego.jpeg");
+
+        this.configSuperficie.finJuego();
+
+        this.enemigos.clear();
+        lobo.setEnemigos(enemigos);
+
+    }
+
+
 }

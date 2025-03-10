@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.math.Rectangle;
 
 
 
@@ -18,7 +19,7 @@ public class Nivel implements Screen {
     private Texture background;
     private ShapeRenderer shapeRenderer;
 
-
+    private boolean fin=false;
     private Music backgroundSound;
     private Personaje mario;
     private ConfigurarSuperficies configSuperficie;
@@ -66,7 +67,7 @@ public class Nivel implements Screen {
     private void configurarSonidoFondo(String cancion) {
         backgroundSound = Gdx.audio.newMusic(Gdx.files.internal(cancion));
         backgroundSound.setLooping(true);
-        backgroundSound.setVolume(0.7f);
+        backgroundSound.setVolume(Configuracion.getInstancia().getVolumen());
         backgroundSound.play();
     }
 
@@ -75,44 +76,93 @@ public class Nivel implements Screen {
 
     @Override
     public void render(float delta) {
+        // finalizar al completar o al matar al personaje
+        fin = fin || mario.isDead() ;
+
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         // movimientos del personaje  y del enemigo
-        mario.manejarMovimiento(configSuperficie.ArraySuperficies(),delta);
-        for(Enemigo enemigo_i : enemigos){
-            enemigo_i.actualizar(configSuperficie.ArraySuperficies(),delta);
-        }
+        mario.manejarMovimiento(configSuperficie.ArraySuperficies(), delta);
+        for (Enemigo enemigo_i : enemigos) {
+            enemigo_i.actualizar(configSuperficie.ArraySuperficies(), delta);
 
+        }
         // pintar fondo
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        mario.renderizar(delta,batch);
-        for(Enemigo enemigo_i : enemigos){
-            enemigo_i.renderizar(delta,batch);
+        if(!fin){
+            mario.renderizar(delta,batch);
         }
+
+
+        for(Enemigo enemigo_i : enemigos){
+            enemigo_i.renderizar(delta,batch,fin);
+        }
+
         batch.end();
 
 
         // pintar SUPERFICIES Y MARIO
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
         configSuperficie.printarSuperficies(shapeRenderer);
         mario.printar(shapeRenderer);
-        // prntar enemigos
+
         for(Enemigo enemigo_i : enemigos){
             enemigo_i.printar(shapeRenderer);
         }
+
         shapeRenderer.end();
 
+        cambiarDeNivel();
 
 
-        if(mario.enemigosVivos()==0){
+
+    }
+
+    private void cambiarDeNivel() {
+        if(mario.enemigosVivos()==0 && !mario.isDead() && !fin){
             nivel_i = nivel_i +1;
+            if(nivel_i==7){
+                fin = true;
+                return;
+            }
             nivelesConfig.setNivel(this.nivel_i);
             background.dispose();
             background = nivelesConfig.getBackground();
         }
+        if(fin){
+            nivelesConfig.finJuego();
+            background.dispose();
+            background = nivelesConfig.getBackground();
+            menuFinJuego();
+        }
 
 
+
+
+    }
+
+    private void menuFinJuego() {
+        if(Gdx.input.justTouched()){
+            float touchX = Gdx.input.getX();
+            float touchY = Gdx.graphics.getHeight() - Gdx.input.getY(); // Convertir coordenadas
+
+            Rectangle botonMenu = configSuperficie.ArraySuperficies().get(0); // Ajusta la posición y tamaño
+            Rectangle botonSalir = configSuperficie.ArraySuperficies().get(1);
+
+
+            if (botonMenu.contains(touchX, touchY)) {
+                game.setScreen(new MainMenuScreen(game)); // Cambia a la pantalla del menú principal
+                dispose();
+
+            } else if (botonSalir.contains(touchX, touchY)) {
+                dispose();
+                Gdx.app.exit(); // Salir del juego
+
+            }
+
+        }
     }
 
 
