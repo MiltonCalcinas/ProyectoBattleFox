@@ -62,14 +62,14 @@ public class MainMenuScreen implements Screen {
             touchPos.y = Gdx.graphics.getHeight() - touchPos.y;
             // Verifica si ocurrió dentro del área
             if (startButtonBounds.contains(touchPos.x, touchPos.y)) {
-                game.setScreen(new Nivel1(game));
+                game.setScreen(new Nivel(game));
             }
         }
     }
 
     private void presskEnter() {
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-            game.setScreen(new Nivel1(game));
+            game.setScreen(new Nivel(game));
         }
     }
 

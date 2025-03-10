@@ -2,121 +2,158 @@ package battle.fox;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.math.Rectangle;
 
-
-
 public class Personaje {
-    private Rectangle bounds; // Área de colisión
+    private Rectangle bounds;
     private Animation<TextureRegion> walkAnimation;
     private float stateTime;
-    private float velocidadSalto =10f,gravedad=-0.5f,velocidadY=0f;
-    private boolean enElSuelo =  true;
-    private float tiempoSalto = 0f;  // Contador de tiempo de salto
-    private float tiempoMaxSalto = 2f;  // Máximo tiempo de salto en segundos
+    private float velocidadSalto = 10f, gravedad = -0.5f, velocidadY = 0f;
+    private boolean enElSuelo = true;
+    private float tiempoSalto = 0f;
+    private float tiempoMaxSalto = 2f;
+    private TextureRegion frameReposo;
+    private boolean mirandoDerecha = false;
+    private Array<BolaDeFuego> bolasDeFuego = new Array<>();
+    private Array<Enemigo> enemigos;
 
-    public Personaje(float x, float y, float width, float height) {
+    public Personaje(float x, float y, float width, float height, Array<Enemigo> enemigos) {
         this.bounds = new Rectangle(x, y, width, height);
+        this.enemigos = enemigos;
         configurarAnimacion();
     }
 
     private void configurarAnimacion() {
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("Mario_and_Enemies.pack"));
-        TextureRegion bigMarioRegion = atlas.findRegion("big_mario");
+        Texture paso1 = new Texture(Gdx.files.internal("lobo_paso1.png"));
+        Texture paso2 = new Texture(Gdx.files.internal("lobo_paso2.png"));
+        Texture paso3 = new Texture(Gdx.files.internal("lobo_paso3.png"));
+        Texture reposo = new Texture(Gdx.files.internal("reposo.png"));
+
+        frameReposo = new TextureRegion(reposo);
 
         Array<TextureRegion> walkFrames = new Array<>();
-        for (int i = 0; i < 4; i++) {
-            walkFrames.add(new TextureRegion(bigMarioRegion, i * 16, 0, 16, bigMarioRegion.getRegionHeight()));
-        }
-        walkAnimation = new Animation<>(0.1f, walkFrames);
+        walkFrames.add(new TextureRegion(paso1));
+        walkFrames.add(new TextureRegion(paso2));
+        walkFrames.add(new TextureRegion(paso3));
+
+        walkAnimation = new Animation<>(0.2f, walkFrames);
         stateTime = 0f;
     }
 
-
-
     public void manejarMovimiento(Array<Rectangle> superficies, float delta) {
-        // Movimiento horizontal con detección de colisiones laterales
         float movimientoX = 0;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            movimientoX = 5;  // Intentar mover a la derecha
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            movimientoX = 5;
+            mirandoDerecha = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            movimientoX = -5;  // Intentar mover a la izquierda
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            movimientoX = -5;
+            mirandoDerecha = false;
         }
 
-        // Verificar colisión lateral antes de mover el personaje
         Rectangle nuevoBounds = new Rectangle(bounds);
-        nuevoBounds.x += movimientoX; // Simular el movimiento
+        nuevoBounds.x += movimientoX;
 
         boolean colisionLateral = false;
         for (Rectangle superficie : superficies) {
             if (nuevoBounds.overlaps(superficie)) {
                 colisionLateral = true;
-                break;  // Salir del bucle si hay colisión
+                break;
             }
         }
+        boolean dentroLimites = (bounds.x + movimientoX > 0) && (bounds.x + movimientoX + bounds.width < Gdx.graphics.getWidth() - 5);
 
-        // Solo mover si no hay colisión lateral
-        if (!colisionLateral) {
+        if ((!colisionLateral || !enElSuelo) && dentroLimites) {
             bounds.x += movimientoX;
         }
 
-        // Manejo de salto con duracion  variable
-        //if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && enElSuelo) {
-        //    velocidadY = velocidadSalto; // Iniciar salto
-        //    enElSuelo = false; // Ya no está en el suelo
-        //}
-        // Manejo de salto con duración variable
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            if (enElSuelo) {
-                velocidadY = velocidadSalto; // Iniciar salto
-                enElSuelo = false;
-                tiempoSalto = 0;  // Reiniciar el contador de salto
-            } else if (tiempoSalto < tiempoMaxSalto) {
-                velocidadY += 0.2f;  // Aumentar la velocidad de subida
-                tiempoSalto += delta;  // Acumular tiempo de salto
-            }
-        } else {
-            tiempoSalto = tiempoMaxSalto;  // Detener el incremento de salto si se suelta la tecla
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+            disparar();
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            if (enElSuelo) {
+                velocidadY = velocidadSalto;
+                enElSuelo = false;
+                tiempoSalto = 0;
+            } else if (tiempoSalto < tiempoMaxSalto) {
+                velocidadY += 0.2f;
+                tiempoSalto += delta;
+            }
+        } else {
+            tiempoSalto = tiempoMaxSalto;
+        }
 
-        // Aplicar gravedad
         velocidadY += gravedad;
         bounds.y += velocidadY;
 
-        // Verificar colisión con el suelo o plataformas
-        enElSuelo = false;  // Suponer que está en el aire hasta que colisione
+        enElSuelo = false;
         for (Rectangle superficie : superficies) {
             if (bounds.overlaps(superficie)) {
-                // Si está cayendo, detener la caída y colocarlo sobre la plataforma
                 if (velocidadY < 0) {
-                    bounds.y = superficie.y + superficie.height;
-                    velocidadY = 0;
-                    enElSuelo = true;
-                    tiempoSalto = 0; // Reiniciar tiempo de salto al tocar el suelo
-                } else if (velocidadY > 0) {  // Si está subiendo (colisión con un techo)
-                    bounds.y = superficie.y - bounds.height; // Colocarlo justo debajo del techo
-                    velocidadY = 0; // Detener el ascenso
-                    tiempoSalto = tiempoMaxSalto;  // Bloquear más impulso
+                    float bordeInferiorPersonaje = bounds.y;
+                    float bordeSuperiorPlataforma = superficie.y + superficie.height;
+                    float bordeInferiorAnterior = bordeInferiorPersonaje - velocidadY;
+                    if (bordeInferiorAnterior >= bordeSuperiorPlataforma) {
+                        bounds.y = superficie.y + superficie.height;
+                        velocidadY = 0;
+                        enElSuelo = true;
+                        tiempoSalto = 0;
+                    }
                 }
             }
         }
     }
 
+    public void disparar() {
+        bolasDeFuego.add(new BolaDeFuego(bounds.x, bounds.y + bounds.height / 2, mirandoDerecha));
+    }
 
+    public void actualizarBalas(float delta) {
+        for (int i = bolasDeFuego.size - 1; i >= 0; i--) {
+            BolaDeFuego bola = bolasDeFuego.get(i);
+            bola.actualizar(delta);
+            if (!bola.estaActiva()) {
+                bolasDeFuego.removeIndex(i);
+            }
+        }
 
-    public void renderizar(float delta,SpriteBatch batch) {
-        stateTime+=delta;
-        TextureRegion frameActual = walkAnimation.getKeyFrame(stateTime, true);
+        for (int i = enemigos.size - 1; i >= 0; i--) {
+            Enemigo enemigo = enemigos.get(i);
+            for (int j = bolasDeFuego.size - 1; j >= 0; j--) {
+                if (bolasDeFuego.get(j).getBounds().overlaps(enemigo.getBounds())) {
+                    enemigos.removeIndex(i);
+                    bolasDeFuego.removeIndex(j);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void renderizar(float delta, SpriteBatch batch) {
+        stateTime += delta;
+        actualizarBalas(delta);
+
+        TextureRegion frameActual = (!Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A)) ? frameReposo : walkAnimation.getKeyFrame(stateTime, true);
+
+        if (mirandoDerecha && !frameActual.isFlipX()) {
+            frameActual.flip(true, false);
+        } else if (!mirandoDerecha && frameActual.isFlipX()) {
+            frameActual.flip(true, false);
+        }
+
         batch.draw(frameActual, bounds.x, bounds.y, bounds.width, bounds.height);
+
+        for (BolaDeFuego bola : bolasDeFuego) {
+            bola.renderizar(batch);
+        }
     }
 
     public void setX(float x) {
@@ -131,33 +168,15 @@ public class Personaje {
         return bounds;
     }
 
-    public void verificarColisiones(Array<Rectangle> superficies) {
-        // Verificar colisiones con todas las superficies
-        for (Rectangle superficie : superficies) {
-            // Si el personaje está moviéndose hacia la derecha
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                // Verificar si el personaje colisiona con la superficie
-                if (bounds.x + bounds.width > superficie.x && bounds.x < superficie.x + superficie.width &&
-                    bounds.y + bounds.height > superficie.y && bounds.y < superficie.y + superficie.height) {
-                    bounds.x = superficie.x - bounds.width; // Detener al personaje en la colisión
-                    break; // Salir del bucle para evitar colisiones múltiples
-                }
-            }
-
-            // Si el personaje está moviéndose hacia la izquierda
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                // Verificar si el personaje colisiona con la superficie
-                if (bounds.x < superficie.x + superficie.width && bounds.x + bounds.width > superficie.x &&
-                    bounds.y + bounds.height > superficie.y && bounds.y < superficie.y + superficie.height) {
-                    bounds.x = superficie.x + superficie.width; // Detener al personaje en la colisión
-                    break; // Salir del bucle para evitar colisiones múltiples
-                }
-            }
-        }
+    public void printar(ShapeRenderer shapeRenderer) {
+        shapeRenderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
+    public int enemigosVivos(){
+        return enemigos.size;
+    }
 
-    public void printar(ShapeRenderer shapeRenderer) {
-        shapeRenderer.rect(bounds.x,bounds.y,bounds.width,bounds.height);
+    public void setEnemigos(Array<Enemigo> enemigos) {
+        this.enemigos = enemigos;
     }
 }
